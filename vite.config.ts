@@ -26,12 +26,7 @@ const config = defineConfig({
       },
     }),
     viteReact(),
-  ],
-  preview: {
-    allowedHosts: [
-      "hireme.jmrecondo.com"
-    ]
-  }
+  ]
 });
 
 export default config;

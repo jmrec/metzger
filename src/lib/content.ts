@@ -8,6 +8,7 @@ export const HOME_HREF = import.meta.env.BASE_URL;
 
 export const IMAGES = {
   hero: asset("/images/hero-pahrump.webp"),
+  marci: asset("/images/marci-metzger.webp"),
   highlights: {
     sales: asset("/images/highlight-sales.webp"),
     sold: asset("/images/highlight-sold.webp"),

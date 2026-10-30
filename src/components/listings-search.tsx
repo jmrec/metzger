@@ -1,3 +1,4 @@
+import { Search } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -21,12 +22,50 @@ import {
 
 const LOCATIONS = [
   "Any",
-  "Pahrump",
-  "Las Vegas",
-  "Henderson",
-  "North Las Vegas",
-  "Mesquite",
+  "Alamo",
+  "Alton",
+  "Amargosa Valley",
+  "Beatty",
+  "Beryl",
+  "Blue Diamond",
   "Boulder City",
+  "Brian Head",
+  "Cal Nev Ari",
+  "Caliente",
+  "Cedar City",
+  "Cold Creek",
+  "Crystal",
+  "Duck Creek Village",
+  "Dyer",
+  "Elko",
+  "Ely",
+  "Goldfield",
+  "Goodsprings",
+  "Hatch",
+  "Henderson",
+  "Indian Springs",
+  "Jean",
+  "Las Vegas",
+  "Laughlin",
+  "Logandale",
+  "Mc Gill",
+  "Mesquite",
+  "Moapa",
+  "Mount Charleston",
+  "Mountain Springs",
+  "Nelson",
+  "North Las Vegas",
+  "Other",
+  "Overton",
+  "Pahrump",
+  "Palm Gardens",
+  "Panaca",
+  "Parowan",
+  "Pioche",
+  "Ruth",
+  "Sandy Valley",
+  "Searchlight",
+  "Tonopah",
 ];
 const TYPES = ["Any", "Residential", "Land", "Residential Lease", "High Rise"];
 const SORTS = [
@@ -34,9 +73,13 @@ const SORTS = [
   "Oldest",
   "Least Expensive to Most",
   "Most Expensive to Least",
+  "Bedrooms (Low to High)",
+  "Bedrooms (High to Low)",
+  "Bathrooms (Low to High)",
+  "Bathrooms (High to Low)",
 ];
-const BEDS = ["Any Number", "Studio", "1+", "2+", "3+", "4+"];
-const BATHS = ["Any Number", "1+", "2+", "3+", "4+"];
+const BEDS = ["Any Number", "Studio", "1+", "2+", "3+", "4+", "5+", "6+"];
+const BATHS = ["Any Number", "1+", "2+", "3+", "4+", "5+", "6+"];
 
 type Filters = {
   location: string;
@@ -83,15 +126,27 @@ function matches(listing: SampleListing, filters: Filters) {
 
 function sortListings(listings: SampleListing[], sort: string) {
   const sorted = [...listings];
-  if (sort === "Oldest")
-    return sorted.sort((a, b) => b.daysListed - a.daysListed);
-  if (sort === "Least Expensive to Most") {
-    return sorted.sort((a, b) => a.price - b.price);
+  const newestFirst = (a: SampleListing, b: SampleListing) =>
+    a.daysListed - b.daysListed;
+
+  switch (sort) {
+    case "Oldest":
+      return sorted.sort((a, b) => b.daysListed - a.daysListed);
+    case "Least Expensive to Most":
+      return sorted.sort((a, b) => a.price - b.price || newestFirst(a, b));
+    case "Most Expensive to Least":
+      return sorted.sort((a, b) => b.price - a.price || newestFirst(a, b));
+    case "Bedrooms (Low to High)":
+      return sorted.sort((a, b) => a.beds - b.beds || newestFirst(a, b));
+    case "Bedrooms (High to Low)":
+      return sorted.sort((a, b) => b.beds - a.beds || newestFirst(a, b));
+    case "Bathrooms (Low to High)":
+      return sorted.sort((a, b) => a.baths - b.baths || newestFirst(a, b));
+    case "Bathrooms (High to Low)":
+      return sorted.sort((a, b) => b.baths - a.baths || newestFirst(a, b));
+    default:
+      return sorted.sort(newestFirst);
   }
-  if (sort === "Most Expensive to Least") {
-    return sorted.sort((a, b) => b.price - a.price);
-  }
-  return sorted.sort((a, b) => a.daysListed - b.daysListed);
 }
 
 export function ListingsSearch() {
@@ -125,6 +180,7 @@ export function ListingsSearch() {
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (rangeError) return;
     resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -229,15 +285,26 @@ export function ListingsSearch() {
             </div>
           </div>
 
-          {rangeError ? (
-            <p
-              id="price-range-error"
-              role="alert"
-              className="mt-4 text-sm text-destructive"
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+            {rangeError ? (
+              <p
+                id="price-range-error"
+                role="alert"
+                className="text-sm text-destructive sm:mr-auto"
+              >
+                {rangeError}
+              </p>
+            ) : null}
+
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full rounded-none text-sm font-semibold uppercase tracking-widest sm:ml-auto sm:w-auto"
             >
-              {rangeError}
-            </p>
-          ) : null}
+              <Search />
+              Search Now
+            </Button>
+          </div>
         </form>
 
         <div
